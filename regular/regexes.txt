@@ -1,0 +1,37 @@
+
+
+         Alph = {1,0}
+         La = 1^m0^n   m>0, n>=0
+         
+         RE(La) = 1+0* == 11*0*
+         
+         Lb = all nonzero even binary numbers
+         
+         RE(Lb) =  1[10]*0  ==  1(1|0)*0
+                                1(10)*0    wrong!
+                                
+         Lc = {who,what,where,when,why}
+         
+         RE(Lc) =  wh(o|(at)|y|(ere)|(en)) 
+       
+         Ld = 1^n0^n   n >= 0
+         
+              RE(Ld) = 1*0*
+              
+              S -> 1 S 0 | empty
+              S -> ( S ) | empty
+              
+              
+              
+              
+              
+              
+              
+              
+              
+         
+         
+               
+                          
+         
+         

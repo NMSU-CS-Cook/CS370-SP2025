@@ -1,5 +1,5 @@
 //
-// Linked List example in plain C
+// Hash table with Linked Lists example in plain C
 //
 #include <stdio.h>
 #include <string.h>
@@ -37,20 +37,27 @@ void printElements(ListElement * elems)
 int main(int argc, char* argv[])
 {
    int i;
-   ListElement * args = NULL;
+   ListElement* argtable[3] = {NULL};  // hash table
    ListElement * newElem = NULL;
    for (i=0; i < argc; i++) {
       printf("argv[%d] = (%s)\n", i, argv[i]);
       newElem = newListElement(100+i, argv[i]);
-      // attach to list
-      if (args == NULL) 
-         args = newElem;
+      // hash to table index
+      int h = argv[i][0] % 3;
+      // attach to table list
+      if (argtable[h] == NULL) 
+         argtable[h] = newElem;
       else {
-         newElem->next = args;
-         args = newElem;
+         newElem->next = argtable[h];
+         argtable[h] = newElem;
       }
    }
-   printElements(args);
+   printf("list 0:\n");
+   printElements(argtable[0]);
+   printf("list 1:\n");
+   printElements(argtable[1]);
+   printf("list 2:\n");
+   printElements(argtable[2]);
    return 0;
 }
 

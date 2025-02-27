@@ -1,0 +1,23 @@
+
+
+   S -> c d p A r
+   A -> a | a e A | empty
+   
+   FunCall -> call id ( Arguments )
+   Arguments -> arg | arg , Arguments | empty
+   
+   PR def: N -> R*   N in {Nonterminals}, R in {NT U T}
+   
+   Ex Derivation
+ 1   S
+ 2   c d p A r
+ 3   c d p a e A r
+ 4   c d p a e a r    this is a sentence in the language of the grammar!
+ 
+   c d p r   ?? Is this in the language of the grammar??
+   S
+   c d p A r
+   c d p r      yes! this is the derivation that proves it!
+   
+   
+ 

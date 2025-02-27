@@ -1,0 +1,39 @@
+
+
+    float limitedSquare(x) float x: {
+        /* comment */
+        return (x<=-10.0||x>=10.0)?100:x*x;
+    }
+    
+    float         KWFLOAT
+    limitedSquare  ID ("limitedSquare")
+    (             LPAREN
+    x              ID ("x")
+    )             RPAREN
+    float         KWFLOAT
+    x              ID ("x")
+    :             COLON
+    {             LBRACE
+    (comment is stripped out before scanning)
+    return        KWRETURN
+    (             LPAREN
+    x              ID ("x")
+    <=            RELOP (LEQ)
+    -             MINUS
+    10.0          FPNUMBER (10.0)
+    ||            LOGICALOP (LOR)
+    x              ID ("x")
+    >=            RELOP (GEQ)
+    10.0          FPNUMBER (10.0)
+    )             RPAREN
+    ?             CONDITIONOP
+    100           NUMBER (100)
+    :             COLON
+    x             ID
+    *             STAROP
+    x             ID
+    ;             SEMICOLON
+    }             RBRACE
+    
+    
+    

@@ -1,0 +1,1 @@
+dot -Tpng e5.dot > e5.png

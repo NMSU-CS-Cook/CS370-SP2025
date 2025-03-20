@@ -8,5 +8,6 @@ digraph {
   "7,8,10" -> "8,9,10" [label="b"];
   "8,9,10" -> "11" [label="a"];
   "8,9,10" -> "8,9,10" [label="b"];
+  "11" [style="bold"]; // final state
 }
 

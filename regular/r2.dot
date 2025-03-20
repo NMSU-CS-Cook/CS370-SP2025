@@ -1,0 +1,9 @@
+digraph {
+ rankdir="LR";
+ "A"->"B" [label="1"];
+ "B"->"H,L" [label="0"];
+ "H,L"->"H,L" [label="0"];
+ "B"->"E" [label="1"];
+ "H,L"->"E" [label="1"];
+ "E"->"H,L" [label="0"];
+}

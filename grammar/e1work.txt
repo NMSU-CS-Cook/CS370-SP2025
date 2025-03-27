@@ -1,0 +1,52 @@
+
+Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
+ObjectPhrase -> Adjectives onoun | onoun | empty
+SubjectPhrase -> Adjectives snoun | snoun
+Adjectives -> adjective Adjectives | adjective
+VerbPhrase -> adverb verb | verb
+
+FIRST(ObjectPhrase SubjectPhrase VerbPhrase) = {adjective, onoun, snoun}
+FOLLOW(Sentence) = {$}
+
+FIRST(Adjectives onoun) = {adjective}
+FIRST(onoun) = {onoun}
+FIRST(empty) = {}
+FOLLOW(ObjectPhrase) = {adjective, snoun}
+- ObjectPhrase does not satisfy LL(1) rules
+
+FIRST(Adjectives snoun) = {adjective}
+FIRST(snoun) = {snoun}
+FOLLOW(SubjectPhrase) = {adverb, verb}
+
+FIRST(adjective Adjectives) = {adjective}
+FIRST(adjective) = {adjective}
+FOLLOW(Adjectives) = {onoun, snoun}
+- Adjectives does not satisfy LL(1) rules
+
+FIRST(adverb verb) = {adverb}
+FIRST(verb) = {verb}
+FOLLOW(VerbPhrase) = {$}
+
+==========================================================================
+Transform grammar
+
+1. Left factor Adjectives
+
+Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
+ObjectPhrase -> Adjectives onoun | onoun | empty
+SubjectPhrase -> Adjectives snoun | snoun
+Adjectives -> adjective Adjhelper
+Adjhelper -> Adjectives | empty
+VerbPhrase -> adverb verb | verb
+
+FIRST(adjective Adjhelper) = {adjective}
+FOLLOW(Adjectives) = {onoun, snoun}
+- Adjectives now satisfies LL(1) rules
+
+FIRST(Adjectives) = {adjective}
+FOLLOW(Adjhelper) = {onoun, snoun}
+- satisfies LL(1) rules
+
+
+
+

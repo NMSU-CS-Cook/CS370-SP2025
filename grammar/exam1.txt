@@ -1,0 +1,8 @@
+
+Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
+ObjectPhrase -> Adjectives onoun | onoun | empty
+SubjectPhrase -> Adjectives snoun | snoun
+Adjectives -> adjective Adjectives | adjective
+VerbPhrase -> adverb verb | verb
+
+

@@ -1,8 +1,100 @@
 
-Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
-ObjectPhrase -> Adjectives onoun | onoun | empty
-SubjectPhrase -> Adjectives snoun | snoun
-Adjectives -> adjective Adjectives | adjective
-VerbPhrase -> adverb verb | verb
+ Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
+ ObjectPhrase -> Adjectives onoun | onoun | empty
+ SubjectPhrase -> Adjectives snoun | snoun
+ Adjectives -> adjective Adjectives | adjective
+ VerbPhrase -> adverb verb | verb
+
+====================================================
+Compute FIRST and FOLLOW
+
+ FIRST(ObjectPhrase SubjectPhrase VerbPhrase) = {adjective, onoun, snoun}
+ FOLLOW(Sentence) = {$}
+
+ FIRST(Adjectives onoun) = {adjective}
+ FIRST(onoun) = {onoun}
+ FIRST(/empty/) = {}
+ FOLLOW(ObjectPhrase) = {adjective, snoun}     // NOT LL(1)!
+
+ FIRST(Adjectives snoun) = {adjective}
+ FIRST(snoun) = {snoun}
+ FOLLOW(SubjectPhrase) = {adverb, verb}
+
+ FIRST(adjective Adjectives) = {adjective}
+ FIRST(adjective) = {adjective}
+ FOLLOW(Adjectives) = {onoun, snoun}          // NOT LL(1)!
+
+ FIRST(adverb verb) = {adverb}
+ FIRST(verb) = {verb}
+ FOLLOW(VerbPhrase) = {$}
+
+====================================================
+Fix #1: Left factoring of Adjectives
+
+Original:  Adjectives -> adjective Adjectives | adjective
+Change to:
+ Adjectives -> adjective AdjHelper
+ AdjHelper -> Adjectives | empty
+
+ FIRST(adjective AdjHelper) = {adjective}
+ FOLLOW(Adjectives) = {onoun, snoun}
+
+ FIRST(Adjectives) = {adjective}
+ FIRST(/empty/) = {}
+ FOLLOW(AdjHelper) = {onoun, snoun}     // YEAH! this now satisfies LL(1)
+
+=================================================
+Fix #2: remove empty production rule from ObjectPhrase
+
+ Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
+ ObjectPhrase -> Adjectives onoun | onoun 
+ SubjectPhrase -> Adjectives snoun | snoun
+ Adjectives -> adjective AdjHelper
+ AdjHelper -> Adjectives | empty
+ VerbPhrase -> adverb verb | verb
+
+ ==> This grammar is LL(1)
+
+Parse Table:
+          adjective    onoun       snoun        adverb     verb        $
+Sntc      S->OPSPVP    S->OPSPVP   S->OPSPVP
+OP        OP->Adjs-on  OP->onoun
+SP        SP->Adjs-sn              SP->snoun
+VP                                              VP->ad-vb  VP->verb
+Adjs      Adjs->adj-AdH
+AdjH      AdjH->Adjs   AdjH->/e/   AdjH->/e/
+
+
+Parse of "adjective onoun snoun adverb verb"
+
+Stack                               Lookahead     Action
+----------------------------------------------------
+Sentence $                          adjective     apply S->OPSPVP
+OP SP VP $                          adjective     apply OP->Adjs-on
+Adjectives onoun SP VP $            adjective     apply Adjs->adj-AdH
+adjective AdjHelper onoun SP VP $   adjective     match and consume
+AdjHelper onoun SP VP $             onoun         apply AdjH->/e/
+onoun SP VP $                       onoun         match and consume
+SP VP $                             snoun         apply SP->snoun
+snoun VP $                          snoun         match and consume
+VP $                                adverb        apply VP->ad-vb
+adverb verb $                       adverb        match and consume
+verb $                              verb          match and consume
+$                                   $             match - SUCCESS!
+
+
+
+Failed Parse of "adjective onoun adverb verb"
+
+Stack                                   Lookahead    Action
+-----------------------------------------------------------
+Sentence $                              adjective    apply S->OPSPVP
+OP SP VP $                              adjective    apply OP->Adjs-on
+Adjectives onoun SP VP $                adjective    apply Adjs->adj-AdH
+adjective AdjHelper onoun SP VP $       adjective    match and consume
+AdjHelper onoun SP VP $                 onoun        apply AdjH->/e/
+onoun SP VP $                           onoun        match and consume
+SP VP $                                 adverb       SYNTAX ERROR!
+
 
 

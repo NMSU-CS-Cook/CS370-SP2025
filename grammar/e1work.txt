@@ -27,10 +27,8 @@ FIRST(adverb verb) = {adverb}
 FIRST(verb) = {verb}
 FOLLOW(VerbPhrase) = {$}
 
-==========================================================================
-Transform grammar
-
-1. Left factor Adjectives
+==================================================
+Transform grammar 1. Left factor Adjectives
 
 Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
 ObjectPhrase -> Adjectives onoun | onoun | empty
@@ -47,6 +45,65 @@ FIRST(Adjectives) = {adjective}
 FOLLOW(Adjhelper) = {onoun, snoun}
 - satisfies LL(1) rules
 
+All other FIRSTs and FOLLOWs are same
 
+NOTE: left factoring changes the _grammar_ but 
+      NOT the _language_
+
+==================================================
+Transform grammar 2. Deal with ObjectPhrase
+
+There is no grammar transformation that will keep the
+language the same and create an LL(1) grammar (AFAICT). 
+We could UNIFY the object and subject phrase production 
+rules, such as:
+
+Sentence ->  NounPhrase NounPhrase VerbPhrase
+NounPhrase -> Adjectives Noun | Noun | empty
+Noun -> onoun | snoun
+
+But this would allow MORE sentences in the language than
+the original does -- e.g., it would allow the subject 
+before the object, or even just an object phrase without
+a subject.
+
+The current language (from the original grammar) simply 
+cannot distinguish an object phrase from a subject phrase
+until the noun is seen, and this might not happen for an
+infinite number of adjectives. No LL(1) grammar can be made
+for this language as defined.
+
+However, if the object phrase was not allowed to be empty,
+then everything is immediately solved!
+
+==================================================
+
+Table driven top down parsing
+
+                 adjective    onoun      snoun      adverb      verb      $
+Sentence         S->OpSpVp   S->OpSpVp  S->OpSpVp
+ObjectPhrase    Op->Adonoun  Op->onoun
+SubjectPhrase   Sp->Adsnoun             Sp->snoun
+Adjectives      Ad->adjAdjH
+AdjHelper       AdjH->Adj    AdjH->{}    AdjH->{}
+VerbPhrase                                         Vp->avverbb  Vp->verb
+
+
+parsing of "adjective onoun snoun adverb verb":
+
+Stack                              Lookahead    Action
+------------------------------------------------------
+Sentence $                         adjective    apply S->OpSpVp
+Op Sp Vp $                         adjective    apply Op->Adonoun
+Adjectives onoun Sp Vp $           adjective    apply Ad->AdAdjH
+adjective AdjHelper onoun Sp Vp $  adjective    match and consume
+AdjHelper onoun Sp Vp $            onoun        apply AdjH->{}
+onoun Sp Vp $                      onoun        match and consume
+Sp Vp $                            snoun        apply Sp->snoun
+snoun Vp $                         snoun        match and consume
+Vp $                               adverb       apply Vp->avverb
+adverb verb $                      adverb       match and consume
+verb $                             verb         match and consume
+$                                  $            match -- successful parse!
 
 

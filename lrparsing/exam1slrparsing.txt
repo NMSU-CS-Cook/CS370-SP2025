@@ -10,4 +10,91 @@ SubjectPhrase -> Adjectives snoun | snoun
 Adjectives -> adjective Adjectives | adjective
 VerbPhrase -> adverb verb | verb
 
+Simplified by renaming:
+
+augmentation:
+T' -> T
+
+1:    T -> O S V
+234:  O -> A o | o | empty
+56:   S -> A s | s
+78:   A -> a A | a
+910:  V -> d v | v
+
+S1 = Closure({T'->.T}) = {T'->.T, T->.OSV, O->.Ao, O->.o, O->., A->.aA, A->.a}
+GoTo(S1,T) = Closure({T'->T.}) = {T'->T.} = S2
+GoTo(S1,O) = Closure({T->O.SV}) = {T->O.SV, S->.As, S->.s, A->.aA, A->.a} = S3
+GoTo(S1,A) = Closure({O->A.o}) = {O->A.o} = S4
+GoTo(S1,o) = Closure({O->o.}) = {O->o.} = S5
+GoTo(S1,a) = Closure({A->a.A, A->a.}) = {A->a.A, A->a., A->.aA, A->.a} = S6
+GoTo(S3,S) = Closure({T->OS.V}) = {T->OS.V, V->.dv, V->.v} = S7
+GoTo(S3,A) = Closure({S->A.s}) = {S->A.s} = S8
+GoTo(S3,s) = Closure({S->s.}) = {S->s.} = S9
+GoTo(S3,a) = S6
+GoTo(S4,o) = Closure({O->Ao.}) = {O->Ao.} = S10
+GoTo(S6,A) = Closure({A->aA.}) = {A->aA.} = S11
+GoTo(S6,a) = S6
+GoTo(S7,V) = Closure({T->OSV.}) = {T->OSV.} = S12
+GoTo(S7,d) = Closure({V->d.v}) = {V->d.v} = S13
+GoTo(S7,v) = Closure({V->v.}) = {V->v.} = S14
+GoTo(S8,s) = Closure({S->As.}) = {S->As.} = S15
+GoTo(S13,v) = Closure({V->dv.}) = {V->dv.} = S16
+
+FOLLOW(T) = {$}  FOLLOW(O) = {a,s}  FOLLOW(S) = {d,v}
+FOLLOW(A) = {s,o}  FOLLOW(V) = {$}
+
+Parsing Table (GoTo and Shift/Reduce actions)
+
+         T    O    S    V    A     a     o     s     d     v     $
+S1       g2   g3             g4    s6*   s5    r4
+S2                                                               accept
+S3                 g7        g8    s6          s9
+S4                                       s10
+S5                                 r3          r3
+S6                           g11   s6    r8    r8
+S7                      g12                          s13   s14
+S8                                             s15
+S9                                                   r6    r6
+S10                                r2          r2
+S11                                      r7    r7
+S12                                                               r1
+S13                                                        s16
+S14                                                               r10
+S15                                                  r5    r5
+S16                                                               r9
+       
+1:    T -> O S V
+234:  O -> A o | o | empty
+56:   S -> A s | s
+78:   A -> a A | a
+910:  V -> d v | v
+
+Parse of "oasv":
+Stack               Lookahead        Actions
+---------------------------------------------
+1                      o             shift 5
+1 5                    a             reduce O->o, goto 3
+1 3                    a             shift 6
+1 3 6                  s             reduce A->a, goto 8
+1 3 8                  s             shift 15
+1 3 8 15               v             reduce S->As, goto 7
+1 3 7                  v             shift 14
+1 3 7 14               $             reduce V->v, goto 12
+1 3 7 12               $             reduce T->OSV, goto 2
+1 2                    $             ACCEPT!
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
 

@@ -1,0 +1,13 @@
+
+Example of building an SLR parsing table for the 
+Exam1 grammar and using it to parse
+
+Grammar:
+
+Sentence -> ObjectPhrase SubjectPhrase VerbPhrase
+ObjectPhrase -> Adjectives onoun | onoun | empty
+SubjectPhrase -> Adjectives snoun | snoun
+Adjectives -> adjective Adjectives | adjective
+VerbPhrase -> adverb verb | verb
+
+

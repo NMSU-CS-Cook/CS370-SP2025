@@ -1,9 +1,9 @@
 
 Grammar for Palindromes over {0,1}
 
-S -> A | B | empty     // INCORRECT: does not handle odd-length Pd's
-A -> 0 S 0
-B -> 1 S 1
+S -> A | B | empty     // INCORRECT: does not 
+A -> 0 S 0             // handle odd-length
+B -> 1 S 1             // palindromes
 
 FIRST(A) = {0}
 FIRST(B) = {1}
@@ -15,7 +15,7 @@ FOLLOW(B) = {0,1,$}
 
 This grammar is NOT LL(1)
 
-So, make a new grammar...
+So, let's make a new grammar...
 
 alphabet = {0,1,a}
 
@@ -34,13 +34,15 @@ FOLLOW(B) = {0,1,$}
 
 This grammar IS LL(1)
 
+Top-down parsing table:
+
 NT      0        1         a          $
 ----------------------------------------
 S     S->A     S->B      S->a
 A    A->0S0
 B             B->1S1
 
-Parse of "011a110"
+Top-down parse of "011a110"
 
 Stack           Lookahead          Action
 -----------------------------------------
@@ -79,9 +81,9 @@ A        S->A
 011A110  S->A
 0110110  A->0
 
-Grammar copied again and augmented:
+Grammar copied again, rule-numbered and augmented:
 
-S' -> S
+0   S' -> S
 123 S -> A | B | empty       FOLLOW(S) = {0,1,$}
 45  A -> 0 S 0 | 0           FOLLOW(A) = {0,1,$}
 67  B -> 1 S 1 | 1           FOLLOW(B) = {0,1,$}
@@ -108,7 +110,7 @@ GoTo(S6,1) = S6
 GoTo(S7,0) = Closure({A->0S0.}) = {A->0S0.} = S9
 GoTo(s8,1) = Closure({B->1S1.}) = {B->1S1.} = S10
 
-Build our SLR parse table(s)
+Build our bottom-up SLR parse table(s)
 
        GOTO              ACTION (S/R)
      S   A   B      0        1        $   
@@ -123,5 +125,27 @@ S8                          sh10
 S9                 r4       r4       r4
 S10                r6       r6       r6
 
+Attempt a parse of "0110":
+
+Stack            Lookahead          Action
+------------------------------------------
+1                   0               shift 5
+1 5                 1               shift 6
+1 5 6               1(2nd)          shift 6
+1 5 6 6             0               shift 5
+1 5 6 6 5           $               reduce 5: A->0, goto 3
+1 5 6 6 3           $               reduce 1: S->A, goto 8
+1 5 6 6 8           $               parsing is broken here
+
+If we choose to reduce on 3 at step 5
+
+Stack            Lookahead          Action
+------------------------------------------
+1                   0               shift 5
+1 5                 1               shift 6
+1 5 6               1(2nd)          shift 6
+1 5 6 6             0               shift 5
+1 5 6 6 5           $               reduce 3: S->e, goto 7
+1 5 6 6 5 7         $               broken parse
 
 
